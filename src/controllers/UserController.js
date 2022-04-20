@@ -1,6 +1,6 @@
 const { validateErrors } = require("../utils/functions");
 const UserServices = require("../services/user.service");
-
+const Logger = require("../config/logger");
 
 module.exports = {
   async create(req, res) {
@@ -40,6 +40,7 @@ module.exports = {
           }
         }
       */
+      Logger.info(`Usuário ${user.error} cadastrado com sucesso`);
       return res.status(201).send({ response: user.id });
     } catch (error) {
       const message = validateErrors(error);
@@ -50,6 +51,7 @@ module.exports = {
                 }
               }
             */
+      Logger.error(`Erro na aplicação: ${error.message}`);
       return res.status(400).send(message);
     }
   },
@@ -82,10 +84,11 @@ module.exports = {
       const token = await UserServices.beginSession(email, password);
 
       if (token.error) throw new Error(token.error);
-
+      Logger.info(`Logado com sucesso.`);
       return res.status(201).send({ token: token });
     } catch (error) {
       const message = validateErrors(error);
+      Logger.info(`${error.message}`);
       return res.status(400).send(message);
     }
   },
@@ -125,6 +128,7 @@ module.exports = {
       }
 
       if (users.length === 0) {
+        Logger.info(`Não há usuário cadastrado.`);
         return res.status(204).send();
       }
       /*
@@ -134,7 +138,7 @@ module.exports = {
         }
       }
       */
-
+      Logger.info(`Busca de usuários no banco de dados funcionando.`);
       return res.status(200).send({ users });
     } catch (error) {
       const message = validateErrors(error);
@@ -145,7 +149,7 @@ module.exports = {
        }
      }
      */
-
+      Logger.error(error.message);
       return res.status(400).send(message);
     }
   },
@@ -187,9 +191,10 @@ module.exports = {
       if (message.error) {
         throw new Error(message.error);
       }
-
+      Logger.info(`${message}`);
       return res.status(200).json({ message });
     } catch (error) {
+      Logger.error(`${error.message}`);
       return res.status(400).json({ error: error.message });
     }
   },
