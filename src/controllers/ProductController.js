@@ -8,6 +8,7 @@ const {
   getProductById,
   countSalesByProductId,
 } = require("../services/product.service");
+const Logger = require("../config/logger");
 
 module.exports = {
   async index(req, res) {
@@ -37,22 +38,24 @@ module.exports = {
 
       const products = await indexProductService(name, price_min, price_max);
 
-      if (products.length === 0) return res.status(204).send();
-
+      if (products.length === 0) {
+        Logger.info(`There is no product registered in the database.`);
+        return res.status(204).send();
+      }
+      Logger.info(`Search performed successfully.`);
       return res.status(200).send({ products });
 
       /* #swagger.responses[200] = { 
                schema: { $ref: "#/definitions/GetProduct" },
                description: "Produtos:" 
         } */
-
     } catch (error) {
       const message = validateErrors(error);
+      Logger.error(error.message);
       return res.status(400).send(message);
     }
   },
   async store(req, res) {
-
     /*#swagger.tags = ['Produto']
    #swagger.description = 'Endpoint para criar um novo produto. Nesse endpoint o usuário deve ter permissão WRITE.'
    #swagger.parameters['obj'] = {
@@ -63,7 +66,6 @@ module.exports = {
        }
      }*/
 
-
     try {
       const newProduct = req.body;
 
@@ -72,7 +74,7 @@ module.exports = {
               schema: { $ref: "#/definitions/ResProduct" },
               description: "Produto criado com sucesso!" 
        } */
-
+      Logger.info(`Product created successfully!`);
       return res.status(200).send({
         message: "Produto criado com sucesso!",
         novoProduto: {
@@ -82,6 +84,7 @@ module.exports = {
       });
     } catch (error) {
       const message = validateErrors(error);
+      Logger.error(error.message);
       return res.status(400).send(message);
     }
   },
@@ -101,7 +104,6 @@ module.exports = {
           $ref: '#/definitions/PutProduct'
         }
       }*/
-
 
     try {
       const { product_id } = req.params;
@@ -124,12 +126,14 @@ module.exports = {
       );
 
       if (!product) {
+        Logger.error(`Product not found.`);
         return res.status(404).send({ message: "Produto não encontrado." });
       }
-
+      Logger.info(`Information successfully changed!`);
       return res.status(204).send();
     } catch (error) {
       const message = validateErrors(error);
+      Logger.error(error.message);
       return res.status(400).send(message);
     }
   },
@@ -161,14 +165,16 @@ module.exports = {
       );
 
       if (!updatedProduct) {
+        Logger.error(`Product not found.`);
         return res
           .status(404)
           .send({ message: `Não existe produto com o id ${id}` });
       }
-
+      Logger.info(`Information successfully changed.`);
       return res.status(204).send();
     } catch (error) {
       const message = validateErrors(error);
+      Logger.error(error.message);
       return res.status(400).send(message);
     }
   },
@@ -182,23 +188,25 @@ module.exports = {
      type: 'number',
    } */
 
-
     try {
       const { id } = req.params;
 
-      const countSales = await countSalesByProductId(id)
+      const countSales = await countSalesByProductId(id);
       if (countSales > 0) {
+        Logger.error(`This product cannot be deleted because it was sold.`);
         throw new Error("Produto não pode ser deletado, produto já vendido.");
       }
       const product = await getProductById(Number(id));
       if (!product) {
+        Logger.error(`Product not found.`);
         return res.status(404).send({ message: "Produto não encontrado." });
       }
       await product.destroy();
-
+      Logger.info(`Product deleted successfully`);
       return res.status(204).send();
     } catch (error) {
       const message = validateErrors(error);
+      Logger.error(error.message);
       return res.status(400).send(message);
     }
   },

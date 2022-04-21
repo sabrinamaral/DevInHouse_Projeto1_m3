@@ -47,7 +47,6 @@ const Logger = winston.createLogger({
     new winston.transports.File({
       filename: "rejections.log",
       level: "error",
-      format: winston.format.colorize(),
     }),
   ],
 });
