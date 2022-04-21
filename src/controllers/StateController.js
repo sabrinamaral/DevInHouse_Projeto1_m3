@@ -3,7 +3,7 @@ const City = require("../models/City");
 const { validateErrors } = require("../utils/functions");
 const { ACCENT, UNNACENT } = require("../utils/constants/accents");
 const { Op, where, fn, col } = require("sequelize");
-const Logger = require("../config/logger");
+const logger = require("../config/logger");
 
 module.exports = {
   async index(req, res) {
@@ -63,25 +63,25 @@ module.exports = {
           ).values(),
         ];
         if (filteredStates.length === 0) {
-          Logger.info(`no content`);
+          logger.info(`no content`);
           return res.status(204).send();
         } else {
-          Logger.info(`filter performed successfully!`);
+          logger.info(`filter performed successfully!`);
           return res.status(200).send(filteredStates);
         }
       } else {
         const states = await State.findAll();
         if (states.length === 0) {
-          Logger.info(`empty list`);
+          logger.info(`empty list`);
           return res.status(204).send();
         } else {
-          Logger.info(`search performed successfully!`);
+          logger.info(`search performed successfully!`);
           return res.status(200).send({ states });
         }
       }
     } catch (error) {
       const message = validateErrors(error);
-      Logger.error(error.message);
+      logger.error(error.message);
       return res.status(400).send(message);
     }
   },
@@ -101,7 +101,7 @@ module.exports = {
       const { state_id } = req.params;
 
       if (isNaN(state_id)) {
-        Logger.error(`The 'state_id' param must be an integer`);
+        logger.error(`The 'state_id' param must be an integer`);
         return res
           .status(400)
           .send({ message: "The 'state_id' param must be an integer" });
@@ -112,17 +112,17 @@ module.exports = {
       });
 
       if (state.length === 0) {
-        Logger.error(`Couldn't find any state with the given 'state_id`);
+        logger.error(`Couldn't find any state with the given 'state_id`);
         return res.status(404).send({
           message: "Couldn't find any state with the given 'state_id'",
         });
       } else {
-        Logger.info(`search by ID performed successfully!`);
+        logger.info(`search by ID performed successfully!`);
         return res.status(200).send(state[0]);
       }
     } catch (error) {
       const message = validateErrors(error);
-      Logger.error(error.message);
+      logger.error(error.message);
       return res.status(400).send(message);
     }
   },
@@ -143,7 +143,7 @@ module.exports = {
       });
 
       if (!state) {
-        Logger.error(`state not found`);
+        logger.error(`state not found`);
         return res.status(404).json({ message: "state not found." });
       }
 
@@ -175,14 +175,14 @@ module.exports = {
       });
 
       if (!cities.length) {
-        Logger.info(`no content`);
+        logger.info(`no content`);
         return res.status(204).json({});
       }
-      Logger.info("search performed successfully!");
+      logger.info("search performed successfully!");
       return res.status(200).json({ cities });
     } catch (error) {
       const message = validateErrors(error);
-      Logger.error(error.message);
+      logger.error(error.message);
       return res.status(400).send(message);
     }
   },
@@ -223,7 +223,7 @@ module.exports = {
       const state = await State.findByPk(state_id);
 
       if (!state) {
-        Logger.error(`State not found.`);
+        logger.error(`State not found.`);
         return res
           .status(404)
           .send({ message: "O Estado não existe no Banco de Dados" });
@@ -244,7 +244,7 @@ module.exports = {
       });
 
       if (city) {
-        Logger.error(
+        logger.error(
           `There is already a city with the name of ${name} in the state of ${state.name}`
         );
         return res.status(400).send({
@@ -256,11 +256,11 @@ module.exports = {
         name,
         state_id,
       });
-      Logger.info(`City ${newCity.name} created successfully!`);
+      logger.info(`City ${newCity.name} created successfully!`);
       return res.status(201).send({ city: newCity.id });
     } catch (error) {
       const message = validateErrors(error);
-      Logger.error(message);
+      logger.error(message);
       return res.status(403).send(message);
     }
   },

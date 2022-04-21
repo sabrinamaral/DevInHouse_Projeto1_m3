@@ -32,23 +32,27 @@ const format = winston.format.combine(
     (info) => `${info.timestamp} ${info.level}: ${info.message}`
   )
 );
-const Logger = winston.createLogger({
+const logger = winston.createLogger({
   levels,
   level: level(),
   format,
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: "logs.log" }),
+    new winston.transports.File({
+      filename: "src/logs/logs.log",
+    }),
   ],
   exceptionHandlers: [
-    new winston.transports.File({ filename: "exceptions.log" }),
+    new winston.transports.File({
+      filename: "src/logs/exceptions.log",
+    }),
   ],
   rejectionHandlers: [
     new winston.transports.File({
-      filename: "rejections.log",
+      filename: "src/logs/rejections.log",
       level: "error",
     }),
   ],
 });
 
-module.exports = Logger;
+module.exports = logger;

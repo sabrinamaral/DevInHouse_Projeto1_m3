@@ -1,6 +1,6 @@
 const { validateErrors } = require("../utils/functions");
 const UserServices = require("../services/user.service");
-const Logger = require("../config/logger");
+const logger = require("../config/logger");
 
 module.exports = {
   async create(req, res) {
@@ -40,7 +40,7 @@ module.exports = {
           }
         }
       */
-      Logger.info(`${user.error}`);
+      logger.info(`${user.error}`);
       return res.status(201).send({ response: user.id });
     } catch (error) {
       /*
@@ -51,7 +51,7 @@ module.exports = {
               }
             */
       const message = validateErrors(error);
-      Logger.error(`Something went wrong: ${error}`);
+      logger.error(`Something went wrong: ${error}`);
       return res.status(400).send(error.message);
     }
   },
@@ -84,11 +84,11 @@ module.exports = {
       const token = await UserServices.beginSession(email, password);
 
       if (token.error) throw new Error(token.error);
-      Logger.info(`Logado com sucesso.`);
+      logger.info(`Logado com sucesso.`);
       return res.status(201).send({ token: token });
     } catch (error) {
       const message = validateErrors(error);
-      Logger.info(`${error.message}`);
+      logger.info(`${error.message}`);
       return res.status(400).send(message);
     }
   },
@@ -128,7 +128,7 @@ module.exports = {
       }
 
       if (users.length === 0) {
-        Logger.info(`Não há usuário cadastrado.`);
+        logger.info(`Não há usuário cadastrado.`);
         return res.status(204).send();
       }
       /*
@@ -138,7 +138,7 @@ module.exports = {
         }
       }
       */
-      Logger.info(`Busca de usuários no banco de dados funcionando.`);
+      logger.info(`Busca de usuários no banco de dados funcionando.`);
       return res.status(200).send({ users });
     } catch (error) {
       const message = validateErrors(error);
@@ -149,7 +149,7 @@ module.exports = {
        }
      }
      */
-      Logger.error(error.message);
+      logger.error(error.message);
       return res.status(400).send(message);
     }
   },
@@ -191,10 +191,10 @@ module.exports = {
       if (message.error) {
         throw new Error(message.error);
       }
-      Logger.info(`${message}`);
+      logger.info(`${message}`);
       return res.status(200).json({ message });
     } catch (error) {
-      Logger.error(`${error.message}`);
+      logger.error(`${error.message}`);
       return res.status(400).json({ error: error.message });
     }
   },
