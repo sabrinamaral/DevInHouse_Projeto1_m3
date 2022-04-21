@@ -40,10 +40,9 @@ module.exports = {
           }
         }
       */
-      Logger.info(`Usuário ${user.error} cadastrado com sucesso`);
+      Logger.info(`${user.error}`);
       return res.status(201).send({ response: user.id });
     } catch (error) {
-      const message = validateErrors(error);
       /*
               #swagger.responses[400] = {
                 schema: {
@@ -51,8 +50,9 @@ module.exports = {
                 }
               }
             */
-      Logger.error(`Erro na aplicação: ${error.message}`);
-      return res.status(400).send(message);
+      const message = validateErrors(error);
+      Logger.error(`Something went wrong: ${error}`);
+      return res.status(400).send(error.message);
     }
   },
   async session(req, res) {
