@@ -497,11 +497,11 @@
           "200": {
             "description": "OK"
           },
-          "201": {
-            "description": "Created"
-          },
           "204": {
             "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden",
@@ -1518,6 +1518,9 @@
           }
         ],
         "responses": {
+          "201": {
+            "description": "Created"
+          },
           "204": {
             "description": "Sucesso na atualização do endpoint"
           },
@@ -1581,6 +1584,9 @@
           }
         ],
         "responses": {
+          "201": {
+            "description": "Created"
+          },
           "204": {
             "description": "Sucesso na atualização do endpoint"
           },

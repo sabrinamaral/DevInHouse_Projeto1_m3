@@ -1,6 +1,7 @@
 const Role = require("../models/Role");
 const Permission = require("../models/Permission");
 const { validateErrors } = require("../utils/functions");
+const logger = require("../config/logger");
 
 module.exports = {
   async index(req, res) {
@@ -28,9 +29,11 @@ module.exports = {
           },
         ],
       });
+      logger.info("Role search working");
       return res.status(200).send({ roles });
     } catch (error) {
       const message = validateErrors(error);
+      logger.error(message);
       return res.status(400).send(message);
     }
   },
@@ -57,7 +60,7 @@ module.exports = {
     try {
       const { description, permissions } = req.body;
       if (!isNaN(parseInt(description))) {
-        throw new Error("A descrição não pode ser somente numeros.")
+        throw new Error("A descrição não pode ser somente numeros.");
       }
       const role = await Role.create({ description });
 
@@ -72,12 +75,14 @@ module.exports = {
           await role.addPermissions(permissionsEntity);
         }
       }
-         /* #swagger.responses[200] = { 
+      /* #swagger.responses[200] = { 
             schema: { $ref: "#/definitions/ResRole" }
         } */
+      logger.info(`Role successfully created.`);
       return res.status(200).send({ message: "Cargo criado com sucesso." });
     } catch (error) {
       const message = validateErrors(error);
+      logger.error(message);
       return res.status(400).send(message);
     }
   },
@@ -129,13 +134,14 @@ module.exports = {
       /* #swagger.responses[200] = { 
                   schema: {"message": "Permissões vinculadas com sucesso."}
               } */
-
+      logger.info(`Permission successfully linked to the role.`);
       return res
         .status(200)
         .send({ message: "Permissões vinculadas com sucesso." });
     } catch (error) {
       const message = validateErrors(error);
+      logger.error(message);
       return res.status(400).send(message);
     }
-  }
+  },
 };
