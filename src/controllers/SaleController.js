@@ -1,18 +1,17 @@
-const { literal } = require('sequelize');
+const { literal } = require("sequelize");
 const { decode } = require("jsonwebtoken");
-const { validateErrors, daysToDelivery } = require('../utils/functions');
+const { validateErrors, daysToDelivery } = require("../utils/functions");
 
-const salesRoutes = require('../routes/v1/sales.routes');
+const salesRoutes = require("../routes/v1/sales.routes");
 
-const Sale = require('../models/Sale')
+const Sale = require("../models/Sale");
 const User = require("../models/User");
 const ProductsSales = require("../models/ProductsSales");
 const Product = require("../models/Product");
-const Address = require('../models/Address');
-const Delivery = require('../models/Deliveries');
-const State = require('../models/State');
-
-
+const Address = require("../models/Address");
+const Delivery = require("../models/Deliveries");
+const State = require("../models/State");
+const logger = require("../config/logger");
 
 module.exports = {
   async createBuy(req, res) {
@@ -29,30 +28,33 @@ module.exports = {
             in:'path'
         }
     */
-    const { user_id } = req.params
-    const { seller_id, dt_sale } = req.body
+    const { user_id } = req.params;
+    const { seller_id, dt_sale } = req.body;
 
     try {
-      if (!Number(seller_id)) throw new Error('Seller_id deve ser um número')
-      if (!user_id) throw new Error('Precisa enviar o user_id')
-      if (dt_sale.length < 10) throw new Error('Formato de data inválido')
-      if (new Date(dt_sale) == 'Invalid Date') throw new Error('Formato de data inválido')
+      if (!Number(seller_id)) throw new Error("Seller_id deve ser um número");
+      if (!user_id) throw new Error("Precisa enviar o user_id");
+      if (dt_sale.length < 10) throw new Error("Formato de data inválido");
+      if (new Date(dt_sale) == "Invalid Date")
+        throw new Error("Formato de data inválido");
 
       const result = await Sale.create({
-        seller_id: (seller_id) ? seller_id : null,
+        seller_id: seller_id ? seller_id : null,
         buyer_id: user_id,
-        dt_sale: dt_sale
-      })
-      return res.status(201).send({ 'created': "id-" + result.id })
-
+        dt_sale: dt_sale,
+      });
+      logger.info(`Sale created.`);
+      return res.status(201).send({ created: "id-" + result.id });
     } catch (error) {
-      if (error.message.includes('sales_seller_id_fkey')) return res.status(404).send({ message: "seller_id inexistente" })
-      if (error.message.includes('sales_buyer_id_fkey')) return res.status(404).send({ message: "buyer_id inexistente" })
-      if (error.message.includes('invalid input syntax')) return res.status(400).send({ message: "User_id em formato inválido" })
-
-      res.status(400).send({ message: error.message })
+      if (error.message.includes("sales_seller_id_fkey"))
+        return res.status(404).send({ message: "seller_id inexistente" });
+      if (error.message.includes("sales_buyer_id_fkey"))
+        return res.status(404).send({ message: "buyer_id inexistente" });
+      if (error.message.includes("invalid input syntax"))
+        return res.status(400).send({ message: "User_id em formato inválido" });
+      logger.error(error.message);
+      res.status(400).send({ message: error.message });
     }
-
   },
   async createSale(req, res) {
     // #swagger.tags = ['Vendas']
@@ -68,31 +70,33 @@ module.exports = {
             in:'path'
         }
     */
-    const { user_id } = req.params
-    const { buyer_id, dt_sale } = req.body
+    const { user_id } = req.params;
+    const { buyer_id, dt_sale } = req.body;
 
     try {
-      if (dt_sale.length < 10) throw new Error('Formato de data inválido')
-      if (!buyer_id) throw new Error("Precisa existir um comprador")
-      if (new Date(dt_sale) == 'Invalid Date') throw new Error('Formato de data inválido')
+      if (dt_sale.length < 10) throw new Error("Formato de data inválido");
+      if (!buyer_id) throw new Error("Precisa existir um comprador");
+      if (new Date(dt_sale) == "Invalid Date")
+        throw new Error("Formato de data inválido");
 
       const result = await Sale.create({
         seller_id: user_id,
         buyer_id: buyer_id,
-        dt_sale: dt_sale
-      })
-      return res.status(201).send({ 'created': "id-" + result.id })
-
+        dt_sale: dt_sale,
+      });
+      logger.info(`Purchase created`);
+      return res.status(201).send({ created: "id-" + result.id });
     } catch (error) {
-
-      if (error.message.includes('sales_seller_id_fkey')) return res.status(404).send({ message: "seller_id inexistente" })
-      if (error.message.includes('sales_buyer_id_fkey')) return res.status(404).send({ message: "buyer_id inexistente" })
-      if (error.message.includes('invalid input syntax')) return res.status(400).send({ message: "User_id em formato inválido" })
-
-      res.status(400).send({ message: error.message })
+      if (error.message.includes("sales_seller_id_fkey"))
+        return res.status(404).send({ message: "seller_id inexistente" });
+      if (error.message.includes("sales_buyer_id_fkey"))
+        return res.status(404).send({ message: "buyer_id inexistente" });
+      if (error.message.includes("invalid input syntax"))
+        return res.status(400).send({ message: "User_id em formato inválido" });
+      logger.error(error.message);
+      res.status(400).send({ message: error.message });
     }
   },
-
 
   async showSaler(req, res) {
     // #swagger.tags = [' Vendas ']
@@ -103,134 +107,138 @@ module.exports = {
       const findUser = await User.findByPk(id);
 
       const findSaler = await User.findAll({
-        attributes: ['name', 'email'],
-        include:
-        {
-          association: 'sales_user',
-          attributes: ['seller_id', 'dt_sale'],
+        attributes: ["name", "email"],
+        include: {
+          association: "sales_user",
+          attributes: ["seller_id", "dt_sale"],
           where: { seller_id: id },
-        }
+        },
       });
 
       if (!findUser) {
+        logger.error("User doesn't exist.");
         return res.status(400).send({ message: "Este usuario não existe!" });
       }
       if (findSaler.length === 0) {
-        return res.status(400).send({ message: "Este usuario não possui vendas!" });
+        logger.error("User doesn't have sales.");
+        return res
+          .status(400)
+          .send({ message: "Este usuario não possui vendas!" });
       }
-      return res.status(200).json(findSaler)
+      logger.info(`Seller search working.`);
+      return res.status(200).json(findSaler);
     } catch (error) {
-
-      return res.status(400).send({ message: "Erro deconhecido!" })
+      logger.error(error.message);
+      return res.status(400).send({ message: error.message });
     }
   },
 
   async showSaleById(req, res) {
-
     try {
-      const sale_id = req.params.sale_id
+      const sale_id = req.params.sale_id;
 
       if (!sale_id) {
-        return res.status(400).send({ message: 'É necessário passar o ID de vendas' })
+        logger.error(`You need to inform the sale ID`);
+        return res
+          .status(400)
+          .send({ message: "É necessário passar o ID de vendas" });
       }
 
       const sale = await Sale.findByPk(sale_id, {
         attributes: {
-          exclude: ['createdAt', 'updatedAt'],
-
+          exclude: ["createdAt", "updatedAt"],
         },
         include: [
           {
             association: "products",
             attributes: [
-              'product_id',
-              'amount',
-              'unit_price',
-              [literal('unit_price * amount'), 'total'],
+              "product_id",
+              "amount",
+              "unit_price",
+              [literal("unit_price * amount"), "total"],
             ],
           },
           {
             association: "buyer",
-            attributes: [
-              'name',
-            ]
+            attributes: ["name"],
           },
           {
             association: "seller",
-            attributes: [
-              'name',
-            ]
+            attributes: ["name"],
           },
         ],
       });
 
-
       if (!sale) {
-        return res.status(404).send({ message: 'Não existe venda para este ID' })
+        logger.error(`There is no sale for the ID informed.`);
+        return res
+          .status(404)
+          .send({ message: "Não existe venda para este ID" });
       }
-      const productIdList = sale.products.map(p => p.product_id)
+      const productIdList = sale.products.map((p) => p.product_id);
       const productNames = await Product.findAll({
-        attributes: ['id', 'name'],
+        attributes: ["id", "name"],
         where: {
           id: productIdList,
-        }
-      })
+        },
+      });
 
-      const productsWithName = sale.products.map(p => {
+      const productsWithName = sale.products.map((p) => {
         const { dataValues: product } = p;
         return {
-          name: productNames.find(e => e.id === product.product_id).name,
+          name: productNames.find((e) => e.id === product.product_id).name,
           amount: product.amount,
           unit_price: product.unit_price,
           total: product.total,
-        }
-      })
-
+        };
+      });
 
       const response = {
         id_sale: sale.id,
         seller_name: sale.seller.name,
         buyer_name: sale.buyer.name,
         dt_sale: sale.dt_sale,
-        products: productsWithName
-      }
-
-      return res.status(200).json(response)
-
+        products: productsWithName,
+      };
+      logger.info(`Sale by ID found`);
+      return res.status(200).json(response);
     } catch (error) {
-      return res.status(500).json(error.message)
+      logger.error(error.message);
+      return res.status(500).json(error.message);
     }
   },
 
   async showSalesByBuyer(req, res) {
-
     // #swagger.tags = ['Vendas']
     // #swagger.description = 'Endpoint pra buscar as vendas do usuario pelo buyer_id.'
     const { user_id } = req.params;
 
     try {
       const salesData = await User.findAll({
-        attributes: ['id', 'name', 'email'],
+        attributes: ["id", "name", "email"],
         include: [
           {
             association: "buyer_sales",
-            attributes: ['seller_id', 'buyer_id', 'dt_sale'],
+            attributes: ["seller_id", "buyer_id", "dt_sale"],
             where: {
               buyer_id: user_id,
-            }
-          }
-        ]
+            },
+          },
+        ],
       });
 
       if (salesData.length == 0) {
+        logger.error(`no content`);
         return res.status(204).json({ message: "no content" });
       }
 
+      logger.info(`Sale by buyer found`);
       return res.status(200).json(salesData);
-
     } catch (error) {
-
-      return res.status(201).json({ message: "erro ao listar dados de vendas" });
+      logger.error(`something went wrong, it was not possible to list sales`);
+      return res
+        .status(400)
+        .json({ message: "erro ao listar dados de vendas" });
     }
   },
 
@@ -249,26 +257,29 @@ module.exports = {
       const { address_id, delivery_forecast } = req.body;
 
       if (address_id.length == 0) {
-        return res.status(400).json({ message: "Bad Request" });
+        logger.error(`no content`);
+        return res.status(400).json({ message: "no content" });
       }
 
       const sale = await Sale.findAll({
         where: {
           id: sale_id,
-        }
+        },
       });
 
       if (sale.length == 0) {
+        logger.error(`id_sale not found`);
         return res.status(404).json({ message: "id_sale not found" });
       }
 
       const address = await Address.findAll({
         where: {
           id: address_id,
-        }
+        },
       });
 
       if (address.length == 0) {
+        logger.error(`address ID not found`);
         return res.status(404).json({ message: "address_id not found" });
       }
 
@@ -277,7 +288,10 @@ module.exports = {
       const dataForecastParsed = Date.parse(delivery_forecast);
 
       if (dataForecastParsed < dataParsed) {
-        return res.status(400).json({ message: "Bad request" });
+        logger.error(`Forecast date less than current date`);
+        return res
+          .status(400)
+          .json({ message: "Forecast date less than current date" });
       }
 
       const deliverydate = daysToDelivery(7);
@@ -285,24 +299,27 @@ module.exports = {
       const deliveryBooked = await Delivery.findAll({
         where: {
           sale_id: sale_id,
-        }
+        },
       });
 
       if (deliveryBooked.length >= 1) {
-        return res.status(400).json({ message: "Já existe um agendamento de entrega para esta venda" });
+        logger.error(`There is already a delivery schedule for this sale`);
+        return res.status(400).json({
+          message: "There is already a delivery schedule for this sale",
+        });
       }
 
       const deliveryDateResult = await Delivery.create({
         address_id: address_id,
         sale_id: sale_id,
-        delivery_forecast: deliverydate
-      })
-
+        delivery_forecast: deliverydate,
+      });
+      logger.info(`Delivery schedule done`);
       return res.status(200).json({ message: "Entrega agendada com sucesso" });
     } catch (error) {
+      logger.error(error.message);
       return res.status(400).json({ message: "Bad request" });
     }
-
   },
 
   async saleMade(req, res) {
@@ -328,34 +345,36 @@ module.exports = {
     // #swagger.responses[403] = { description: 'O usuário logado não tem autorização para este recurso.' }
     // #swagger.responses[404] = { description: 'product_id ou seller_id não existe no banco de dados.' }
     try {
-
       const { seller_id } = req.params;
       const { product_id } = req.body;
       let { unit_price, amount } = req.body;
       const dt_sale = new Date();
       const buyer = await decode(req.headers.authorization);
       const buyer_id = buyer.userId;
-      console.log(req.body);
       if (!amount) {
         amount = 1;
       }
 
       if (!product_id) {
+        logger.error(`Provide a product ID`);
         return res.status(400).send({ message: "Tem que enviar product_id" });
       }
 
       if (unit_price <= 0 || amount <= 0) {
+        logger.error(`Unit price and amount must be greater than zero`);
         return res
           .status(400)
           .send({ message: "unit_price e amount tem que ser maior que 0" });
       }
       const validProductId = await Product.findByPk(product_id);
       if (!validProductId) {
+        logger.error(`The product ID provided doesn't exist`);
         return res.status(404).send({ message: "product_id não existe" });
       }
 
       const validSellerId = await User.findByPk(seller_id);
       if (!validSellerId) {
+        logger.error(`The seller ID provided doesn't exist`);
         return res.status(404).send({ message: "seller_id não existe" });
       }
 
@@ -378,8 +397,10 @@ module.exports = {
           amount: amount,
         },
       });
-      return res.status(201).json({ 'created': "id-" + productSale.id });
+      logger.info(`sale completed`);
+      return res.status(201).json({ created: "id-" + productSale.id });
     } catch (error) {
+      logger.error(error.message);
       return res.status(400).send(error.message);
     }
   },
