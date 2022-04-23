@@ -6,10 +6,12 @@
 <a id="tech"></a>
 
 Este projeto serve para testar os conhecimentos em NodeJS com Express e utilizando Sequelize para trabalhar com banco de dados.
+
 ## Tecnologias
 
 O projeto desenvolvido utiliza as seguintes tecnologias:
-- [NodeJS](https://nodejs.org/en/) 
+
+- [NodeJS](https://nodejs.org/en/)
 - [Express](https://expressjs.com/)
 - [Bcrypt](https://github.com/kelektiv/node.bcrypt.js/)
 - [Sequelize](https://sequelize.org/)
@@ -22,16 +24,16 @@ O projeto desenvolvido utiliza as seguintes tecnologias:
 
 ### **Pré-requisitos**
 
-  - Possuir o NodeJS e o Postgres instalado na sua máquina.
+- Possuir o NodeJS e o Postgres instalado na sua máquina.
 
 ```bash
 # Clone o Repositório
-$ git clone https://github.com/DEVin-Teltec-BRy/M2P2-DEVinSales.git
+$ git clone https://github.com/sabrinamaral/DevInSales_M3P1.git
 ```
 
 ```bash
 # Entre na pasta projeto
-$ cd M2P2-DEVinSales
+$ cd DevInSales_M3P1
 ```
 
 ```bash
@@ -48,7 +50,7 @@ $ SECRET=senha secreta
 
 ```bash
 # Criar o Database utilizando o Sequelize
-$ yarn sequelize db:create 
+$ yarn sequelize db:create
 # ou
 $ npx sequelize-cli db:create
 ```
@@ -87,6 +89,7 @@ $ yarn dev
 # ou
 $ npm run dev
 ```
+
 ```bash
 # Executar o programa.
 $ yarn swagger-autogen
