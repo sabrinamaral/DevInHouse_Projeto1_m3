@@ -66,7 +66,7 @@ module.exports = {
           logger.info(`no content`);
           return res.status(204).send();
         } else {
-          logger.info(`filter performed successfully!`);
+          logger.info(`filter successfully performed.`);
           return res.status(200).send(filteredStates);
         }
       } else {
@@ -75,7 +75,7 @@ module.exports = {
           logger.info(`empty list`);
           return res.status(204).send();
         } else {
-          logger.info(`search performed successfully!`);
+          logger.info(`search successfully performed`);
           return res.status(200).send({ states });
         }
       }
@@ -117,7 +117,7 @@ module.exports = {
           message: "Couldn't find any state with the given 'state_id'",
         });
       } else {
-        logger.info(`search by ID performed successfully!`);
+        logger.info(`search by ID successfully performed.`);
         return res.status(200).send(state[0]);
       }
     } catch (error) {
@@ -178,7 +178,7 @@ module.exports = {
         logger.info(`no content`);
         return res.status(204).json({});
       }
-      logger.info("search performed successfully!");
+      logger.info("search successfully performed");
       return res.status(200).json({ cities });
     } catch (error) {
       const message = validateErrors(error);
@@ -256,7 +256,7 @@ module.exports = {
         name,
         state_id,
       });
-      logger.info(`City ${newCity.name} created successfully!`);
+      logger.info(`City ${newCity.name} successfully created.`);
       return res.status(201).send({ city: newCity.id });
     } catch (error) {
       const message = validateErrors(error);

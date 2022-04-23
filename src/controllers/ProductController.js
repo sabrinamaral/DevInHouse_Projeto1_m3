@@ -42,7 +42,7 @@ module.exports = {
         logger.info(`There is no product registered in the database.`);
         return res.status(204).send();
       }
-      logger.info(`Search performed successfully.`);
+      logger.info(`Search successfully performed.`);
       return res.status(200).send({ products });
 
       /* #swagger.responses[200] = { 
@@ -74,7 +74,7 @@ module.exports = {
               schema: { $ref: "#/definitions/ResProduct" },
               description: "Produto criado com sucesso!" 
        } */
-      logger.info(`Product created successfully!`);
+      logger.info(`Product successfully created.`);
       return res.status(200).send({
         message: "Produto criado com sucesso!",
         novoProduto: {
@@ -129,7 +129,7 @@ module.exports = {
         logger.error(`Product not found.`);
         return res.status(404).send({ message: "Produto não encontrado." });
       }
-      logger.info(`Information successfully changed!`);
+      logger.info(`Information successfully changed.`);
       return res.status(204).send();
     } catch (error) {
       const message = validateErrors(error);
@@ -202,7 +202,7 @@ module.exports = {
         return res.status(404).send({ message: "Produto não encontrado." });
       }
       await product.destroy();
-      logger.info(`Product deleted successfully`);
+      logger.info(`Product successfully deleted`);
       return res.status(204).send();
     } catch (error) {
       const message = validateErrors(error);

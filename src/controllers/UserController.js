@@ -40,7 +40,7 @@ module.exports = {
           }
         }
       */
-      logger.info(`${user.error}`);
+      logger.info(`User created.`);
       return res.status(201).send({ response: user.id });
     } catch (error) {
       /*
@@ -84,11 +84,11 @@ module.exports = {
       const token = await UserServices.beginSession(email, password);
 
       if (token.error) throw new Error(token.error);
-      logger.info(`Logado com sucesso.`);
+      logger.info(`Successfully logged in.`);
       return res.status(201).send({ token: token });
     } catch (error) {
       const message = validateErrors(error);
-      logger.info(`${error.message}`);
+      logger.error(`${error.message}`);
       return res.status(400).send(message);
     }
   },
@@ -128,7 +128,7 @@ module.exports = {
       }
 
       if (users.length === 0) {
-        logger.info(`Não há usuário cadastrado.`);
+        logger.info(`There is no registered user`);
         return res.status(204).send();
       }
       /*
@@ -138,7 +138,7 @@ module.exports = {
         }
       }
       */
-      logger.info(`Busca de usuários no banco de dados funcionando.`);
+      logger.info(`User search working.`);
       return res.status(200).send({ users });
     } catch (error) {
       const message = validateErrors(error);
@@ -191,7 +191,7 @@ module.exports = {
       if (message.error) {
         throw new Error(message.error);
       }
-      logger.info(`${message}`);
+      logger.info(`User successfully deleted.`);
       return res.status(200).json({ message });
     } catch (error) {
       logger.error(`${error.message}`);
