@@ -1,6 +1,7 @@
+require("dotenv").config();
 const { verify } = require("jsonwebtoken");
 const Role = require("../models/Role");
-const { OWNER } = require('../utils/constants/roles')
+const { OWNER } = require("../utils/constants/roles");
 
 async function auth(req) {
   const { authorization } = req.headers;
@@ -69,13 +70,13 @@ function onlyCanAccessWith(permissionsCanAccess) {
   };
 }
 /**
- * 
+ *
  * Esta função é um middleware que verifica se o usuario logado tem o cargo de OWNER
  * Somente este cargo podem acessar as rotas com este middleware
- * @param {Request Express} req 
- * @param {Response Express} res 
- * @param {Next Express} next 
- * @returns 
+ * @param {Request Express} req
+ * @param {Response Express} res
+ * @param {Next Express} next
+ * @returns
  */
 async function isOwner(req, res, next) {
   const user = await auth(req, res);
@@ -83,20 +84,23 @@ async function isOwner(req, res, next) {
     return res.status(403).send({ message: user.message });
   }
   const roles = await Role.findAll({
-    attributes: ['description'],
+    attributes: ["description"],
     where: {
       id: user.roles.map((role) => role.id),
-    }
+    },
   });
-  const isOwner = roles.some(({ description }) => description === OWNER)
+  const isOwner = roles.some(({ description }) => description === OWNER);
   if (!isOwner) {
     return res
       .status(403)
-      .send({ message: "Apenas usuarios com cargo de OWNER podem acessar este recurso." });
+      .send({
+        message:
+          "Apenas usuarios com cargo de OWNER podem acessar este recurso.",
+      });
   }
   next();
 }
 module.exports = {
   onlyCanAccessWith,
-  isOwner
+  isOwner,
 };
