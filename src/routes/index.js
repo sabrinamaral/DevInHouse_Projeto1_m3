@@ -8,7 +8,7 @@ const productsRoutes = require("./v1/products.routes");
 const statesRoutes = require("./v1/states.routes");
 const addressesRoutes = require("./v1/addresses.routes");
 const productsalesRoutes = require("./v1/productsales.routes");
-const categoryRoutes = require("./v1/products.routes");
+const categoryRoutes = require("./v1/category.routes");
 
 routes.get("/", (req, res) => {
   // #swagger.ignore = true
