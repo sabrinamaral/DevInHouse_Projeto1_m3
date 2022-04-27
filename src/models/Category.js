@@ -7,6 +7,7 @@ class Category extends Model {
         name: {
           type: DataTypes.STRING,
           unique: true,
+          allowNull: false,
           validate: {
             len: {
               args: [3, 15],
