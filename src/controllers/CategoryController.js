@@ -1,5 +1,5 @@
 const Category = require("../models/Category");
-
+const Product = require("../models/Product");
 const logger = require("../config/logger");
 
 module.exports = {
@@ -27,16 +27,39 @@ module.exports = {
         if (name_Db) {
           throw new Error(`There is already a category named ${name_Db.name}`);
         }
-      } else {
-        await Category.create(nameWithNoSpace);
+
+        await Category.create({ name: nameWithNoSpace });
       }
-      // não está salvando no banco ???
-      // ??????????????????????????????
 
       return res.status(201).send({ name: nameWithNoSpace });
     } catch (error) {
       logger.error(error.message);
       res.status(400).send({ message: error.message });
+    }
+  },
+  async filterCategory(req, res) {
+    const { name } = req.query;
+    try {
+      const existsCategory = await Category.findOne({
+        where: { name: name },
+      });
+      if (!existsCategory) {
+        throw new Error("There is no category with the name searched.");
+      }
+
+      const productsIncludedInCategory = await Product.findAll({
+        where: { category_id: existsCategory.id },
+      });
+      if (productsIncludedInCategory.length === 0) {
+        throw new Error(`The list is empty.`);
+      }
+      const result = productsIncludedInCategory.map((product) => {
+        return { produto: product.name, preco: product.suggested_price };
+      });
+
+      res.status(200).send({ result });
+    } catch (error) {
+      res.status(400).send({ error: error.message });
     }
   },
 };
