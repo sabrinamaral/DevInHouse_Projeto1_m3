@@ -9,7 +9,6 @@ const Role = require("../models/Role");
 const Sale = require("../models/Sale");
 const Deliveries = require("../models/Deliveries");
 const Product = require("../models/Product");
-const Category = require("../models/Category");
 const State = require("../models/State");
 const ProductsSales = require("../models/ProductsSales");
 const City = require("../models/City");
@@ -23,11 +22,11 @@ Permission.init(connection);
 Sale.init(connection);
 Deliveries.init(connection);
 Product.init(connection);
-Category.init(connection);
 State.init(connection);
 ProductsSales.init(connection);
 City.init(connection);
 Address.init(connection);
+
 
 User.associate(connection.models);
 Role.associate(connection.models);
@@ -35,7 +34,6 @@ Permission.associate(connection.models);
 Deliveries.associate(connection.models);
 Sale.associate(connection.models);
 Product.associate(connection.models);
-Category.associate(connection.models);
 City.associate(connection.models);
 Address.associate(connection.models);
 ProductsSales.associate(connection.models);

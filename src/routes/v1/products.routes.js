@@ -1,9 +1,6 @@
+const ProductController = require("../../controllers/ProductController");
 const express = require("express");
 const productsRoutes = express.Router();
-
-const ProductController = require("../../controllers/ProductController");
-const CategoryController = require("../../controllers/CategoryController");
-
 const { onlyCanAccessWith } = require("../../middlewares/auth");
 const {
   READ,
@@ -39,12 +36,6 @@ productsRoutes.patch(
   "/products/:id",
   onlyCanAccessWith([UPDATE]),
   ProductController.update
-);
-
-productsRoutes.post(
-  "/products/category",
-  onlyCanAccessWith([WRITE]),
-  CategoryController.createCategory
 );
 
 module.exports = productsRoutes;
