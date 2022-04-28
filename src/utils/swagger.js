@@ -31,39 +31,48 @@ const doc = {
         state: {
           id: 8,
           name: "Espírito Santo",
-          initials: "ES"
-        }
-      }
+          initials: "ES",
+        },
+      },
     },
     PatchAddress: {
       street: "Rua Paralelepípedo",
       number: 944,
       complement: "apto 201",
-      cep: "12345678"
+      cep: "12345678",
     },
     AddUser: {
-      name: 'John Doe',
-      password: 'aB12345',
-      email: 'john.doe@email.com',
-      birth_date: '01/01/1990',
-      roles: [{ role_id: 2 }]
+      name: "John Doe",
+      password: "aB12345",
+      email: "john.doe@email.com",
+      birth_date: "01/01/1990",
+      roles: [{ role_id: 2 }],
     },
     UserLogin: {
       email: "john.doe@email.com",
-      password: "aB12345"
+      password: "aB12345",
     },
     UserInfo: {
-      user: [{
-        id: 42,
-        name: "John Doe",
-        email: "john.doe@email.com",
-        birth_date: "01/01/1990"
-      }]
+      user: [
+        {
+          id: 42,
+          name: "John Doe",
+          email: "john.doe@email.com",
+          birth_date: "01/01/1990",
+        },
+      ],
     },
     CreateUserResponses: {
-      possibleResponse_1: { message: "É necessário que a data informada exista e  seja do tipo dd/mm/yyyy" },
-      possibleResponse_2: { message: "É necessário que o usuário seja maior de idade" },
-      possibleResponse_3: { message: "O novo usuário necessita ter um cargo de WRITE e READ" },
+      possibleResponse_1: {
+        message:
+          "É necessário que a data informada exista e  seja do tipo dd/mm/yyyy",
+      },
+      possibleResponse_2: {
+        message: "É necessário que o usuário seja maior de idade",
+      },
+      possibleResponse_3: {
+        message: "O novo usuário necessita ter um cargo de WRITE e READ",
+      },
       possibleResponse_4: { message: "E-mail deve ser único" },
     },
     Permissions: [
@@ -84,9 +93,13 @@ const doc = {
     ResProduct: {
       nome: "MacBook Air",
       preço_sugerido: 7999.99,
+      category_id: 1,
+    },
+    AddCategory: {
+      name: "Technology",
     },
     ResRole: {
-      message: "Cargo criado com sucesso."
+      message: "Cargo criado com sucesso.",
     },
     GetProduct: {
       Products: [
@@ -105,15 +118,15 @@ const doc = {
       suggested_price: 3999.99,
     },
     AddCity: {
-      name: "Curitiba"
+      name: "Curitiba",
     },
     ResState: {
-      id: 1
-    }
+      id: 1,
+    },
   },
 };
 
 const outputFile = "./src/swagger.json";
 const endpointsFiles = ["./src/routes/index.js"];
 
-swaggerAutogen(outputFile, endpointsFiles, doc)
+swaggerAutogen(outputFile, endpointsFiles, doc);
