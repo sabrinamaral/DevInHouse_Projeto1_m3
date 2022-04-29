@@ -17,7 +17,9 @@ O projeto desenvolvido utiliza as seguintes tecnologias:
 - [Sequelize](https://sequelize.org/)
 - [Postgres](https://www.postgresql.org/)
 - [Swagger](https://swagger.io/)
-
+- [Morgan] (https://www.npmjs.com/package/morgan)
+- [Winston] (https://www.npmjs.com/package/winston)
+- [Sentry] (https://sentry.io)
 <a id="settings"></a>
 
 # Como Utilizar
@@ -28,12 +30,12 @@ O projeto desenvolvido utiliza as seguintes tecnologias:
 
 ```bash
 # Clone o Repositório
-$ git clone https://github.com/sabrinamaral/DevInSales_M3P1.git
+$ git clone https://github.com/sabrinamaral/devinsales_p1m3.git
 ```
 
 ```bash
 # Entre na pasta projeto
-$ cd DevInSales_M3P1
+$ cd devinsales_p1m3
 ```
 
 ```bash
@@ -43,9 +45,11 @@ $ yarn ou npm install
 ```
 
 ```bash
-# Criar um arquivo .env a partir do arquivo .env.sample
+# Criar um arquivo .env a partir do arquivo com as seguintes variáveis de ambiente:
 $ DATABASE_URL=postgresql://user:password@host:port/database
-$ SECRET=senha secreta
+$ SECRET=senha
+$ NODE_ENV=development
+$ SENTRY=dsn da sua conta Sentry
 ```
 
 ```bash
